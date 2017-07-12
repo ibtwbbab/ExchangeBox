@@ -1,0 +1,137 @@
+Preparation for Better Usage
+	1. First of all, you may want just a nice GUI solution. If so, TortoiseSVN is the answer and you don't need below knowledge anymore.
+	2. Remember account.
+	(Win) git config --global credential.helper wincred
+	(Lunix) git config --global credential.helper "cache --timeout=3600"
+	3. Add alias for most used commands.
+	git config --global alias.{alia} '{full_command}', some examples for you:
+	git config --global alias.sts 'status -s' 	git sts	Show brief status
+		as
+		git status -s
+	git config --global alias.ps 'push origin'	git ps integration	Push changes to the server.
+		as
+		git push origin integration
+	git config --global alias.unstage 'reset HEAD --'	git unstage fileA 	Unstage fileA
+		as
+		git reset HEAD -- fileA
+	git config --global alias.last 'log -1 HEAD'	git last
+as
+git log -1 HEAD	Show last commit log
+	4. Config BeyondCompare as your merge tool.
+	# Make sure you have Bcomapare installed or you need to refer to your tool's guide for git settings.
+	git config --global diff.tool bc3
+	git config --global difftool.prompt false
+	git config --global difftool.bc3 trustExitCode true
+	git config --global merge.tool bc3
+	git config --global mergetool.bc3 trustExitCode true
+	# -------- Additional to Win ---------------------
+	git config --global difftool.bc3.path "c:/program files (x86)/beyond compare 3/BCompare.exe"
+	git config --global mergetool.bc3.path "c:/program files (x86)/beyond compare 3/bcomp.exe"
+	# -------- End ------------------
+	# Use "git mergetool" command to open that gift.
+	5. Change default behavior of push.
+	git config --global push.default upstream
+	
+Daily Usage
+git clone {url}	Clone repositry from remote.
+git remote	Show all remote repositry servers.
+git branch -a	Show all (not only local) branches.
+git branch -d/-D {branch}	Delete a branch (forcibly [-D] ignoring branch's merged status)
+git branch -vv	Show more info about local branches like their tracked branches and changes in local and remote.
+git branch -u {remote}/{branch} <local_branch>	Set the current branch <or specified branch> to trace a remote branch.
+git checkout {branch/commit}	Checkout to an existing (local or remote) branch.
+	Use checkout command to move between commits (back and forward):
+	        1. checkout {commit}  ->  move to commit
+	        2. checkout {branch}    ->  move to latest commit of branch
+git checkout -b {branch}	Checkout to a branch and create one (local) if not exist yet.
+git checkout <commit> <--> {file}	Undo all local changes to a file <used when filename is the same as a branch's name> against HEAD or staged <or a commit> version. Dangerous!!!
+git add {filepath}	Add a file to next commit. File path supports simple pattern like 
+	1. '*.cs' -> all cs files in current folder.
+	2. './config/\*.xml' -> all xml files under config folder and its subfolders.
+git add -A	Add all changes to next commit.
+git add -u	Add all changes to already tracked files (modified or removed).
+git rm -r {file}	Remove the file from tracking and local space (this change will be staged auto).
+	-r (recursive) is needed for directory or cmd will fail for nonempty folder.
+git rm -r --cached {file}	Remove the file from tracking while keeping it in disk (this change will be staged auto).
+git reset HEAD -- {file}	Remove staged file from next commit.
+git reset <--hard> {commit}	Move head and stage point to a commit but keep local changes in mixed mode <or hard mode>.
+git diff <file>	Show unstaged changes <for a file>.
+git diff --staged <file>	Show staged changes <for a file>.
+git diff {commit1} {commit2}	Show diff from commit2 against commit1.
+dit diff {branch1}..{branch2}	Show changes between branch1 and branch2.
+dit diff {branch1}...{branch2}	Show changes in branch2 but not in branch1.
+git show {commit}	Show detailed changes of a commit.
+git diff {last_commit} {commit}
+git format-patch -1 {commit}
+git show {commit} > xxx.patch	Generate a patch for a commit.
+
+git format-patch {branchA}	Generate a patch for all commits which are in the current branch but not in the branchA.
+git diff --staged > xxx.patch	Generate a patch for staged files.
+git log	Show all logs.
+git log --pretty=oneline	Show each log in one line.
+git log --graph	Show logs in graphics.
+git log -2	Show last two logs.
+git log <--> {file}	Show logs of a file.
+git log --since={2.weeks|2015-10-10|"3 days ago"}
+git log --before={2.weeks|2015-10-10|"3 days ago"}	Show logs with time filter.
+git log --author {someone}	Only see somebody's commits.
+git log -p 	Show detailed changes of commits.
+git log -p -1 {commit} -- {file}	Show changes to a file on a commit.
+git log --grep "key" <-i>	Only see commits with the keyword <case-insensitive>.
+git log --grep=key <-i>
+git log --grep=A --grep=B	Only see commits with the keyword A or B.
+git log --grep=A --grep=B --all-match	Only see commits with keywords A and B.
+gitk <file>	Open GUI tool to view commits log <of a file>.
+git apply xxx.patch	Apply patch in current branch.
+git stash	Stash your changes (staged and local) so that you can restore them back at any time.
+git stash list	Show all stashed changes.
+git stash apply <stash>	Restore the last <or specific> stashed changes without popping.
+git stash pop	= { git stash apply & git stash drop }
+git stash show -p <stash>	Preview the last <or specific> stashed changes.
+git stash show -p > xxx.patch	Save the last stash to a local patch file.
+git stash drop <stash>	Delete the last <or specific> stash without applying it.
+git merge {branch}	Merge a branch (local or remote) to current local branch.
+git pull <remote>	Pull latest changes from default <or specific> remote.
+git push {remote} {branch}	Push local changes to remote branch.
+git push <-u> {remote} {loc_branch}<:{rm_branch}>	Create a remote branch <with spec name> by pushing a local branch <and track it>.
+git push {remote}  :{rm_branch}	Delete a remote branch.
+git commit <-m 'comments'>	Commit staged changes <with comments>.
+git commit --amend	Modify last commit (comments or changes). This will actually create a new branch as below (O2).
+	O --- O1 (last commit)
+	    \_ O2 (amend commit)
+git diff --name-only --diff-filter=U	List all conflicted files.
+git ls-files -u
+git mergetool	Open merge tool to resolve merge conflicts.
+git clean -f -n	Show untracked files for deleting.
+git clean -f	Remove untracked files.
+git revert <-n> {commit}	Revert the given non-merge commit <but don't commit>.
+git revert -m 1 <-n> {commit}	Revert the given merge commit <but don't commit>.
+git remote set-url {remote} {url}	Modify remote url.
+
+
+Pro Usage (recommend to give them aliases)
+git merge --abort	Abort last merge.
+git reset --hard HEAD	Abort all your changes since last commit. Dangerous!!!
+git log <--graph> <--no-merges> --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --date=relative"	Better view of git log <in graph> <without merge logs>.
+	
+
+** Note some commands need high git version.
+
+The most useful knowledge for git
+How git moves inside repository: https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified
+Undoing changes: https://www.atlassian.com/git/tutorials/undoing-changes
+
+Good Reference Books
+http://www.git-tower.com/learn/git/ebook/command-line/advanced-topics/merge-conflicts
+https://git-scm.com/book/en/v2
+
+For complicated problems
+	1. Try reseting to HEAD version in hard mode (if HEAD doesn't work, try hash code of the version).
+	2. Try deleting problematic files/folders.
+
+
+** What's three way merge
+LOCAL	your file with the changes you’ve made to it
+REMOTE	the file you’re merging in, possibly authored by someone else
+BASE	the common ancestor file that LOCAL and REMOTE came from
+MERGE_RESULT	the file resulting from the merge where you resolve conflicts
